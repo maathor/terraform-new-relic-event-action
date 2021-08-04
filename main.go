@@ -13,7 +13,7 @@ var newRelicApp newrelic.Application
 func main() {
 	newRelicEventType := os.Getenv("INPUT_EVENT_TYPE_NAME")
 	newRelicLicenseKey := os.Getenv("INPUT_NEW_RELIC_LICENCE_KEY")
-	stage := os.Getenv("INPUT_STAGE")
+	stage := os.Getenv("INPUT_ENV")
 	terraformInitStatus := os.Getenv("INPUT_TERRAFORM_INIT_STATUS")
 	terraformApplyStatus := os.Getenv("INPUT_TERRAFORM_APPLY_STATUS")
 	terraformTagKey := os.Getenv("INPUT_TERRAFORM_TAG_KEY")
