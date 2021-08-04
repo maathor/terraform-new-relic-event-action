@@ -29,7 +29,7 @@ It writes into your New Relic account a new customEvent that contains all the pa
       - name: Terraform Monitoring
         uses: maathor/terraform-new-relic-event-action@master
         with:
-          new_relic_api_key: ${{ secrets.NEW_RELIC_API_KEY}}
+          new_relic_licence_key: ${{ secrets.NEW_RELIC_API_KEY}}
           event_type_name: DeployEvent
           env: prod
           terraform_init_status: ${{ steps.init.outcome }}
@@ -44,7 +44,7 @@ It writes into your New Relic account a new customEvent that contains all the pa
 
 | Input                                             | Description                                        |
 |------------------------------------------------------|-----------------------------------------------|
-| `new_relic_api_key`  | {{ SECRET.NEW_RELIC_API_KEY}}    |
+| `new_relic_licence_key`  | {{ SECRET.NEW_RELIC_API_KEY}}    |
 | `event_type_name`   | custom event type name    |
 | `env`   | custom event type name    |
 | `terraform_init_status`   | custom event type name    |

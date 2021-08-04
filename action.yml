@@ -2,8 +2,8 @@ name: "Terraform New Relic Operations Monitoring"
 description: "NewRelic Custom Event to monitor Terraform operations"
 author: "Marc Richard"
 inputs:
-  new_relic_api_key:
-    description: "New Relic API KEY"
+  new_relic_licence_key:
+    description: "New Relic licence KEY"
     required: true
   event_type_name:
     description: "New Relic CustomEvent Name"
