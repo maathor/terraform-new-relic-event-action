@@ -32,7 +32,7 @@ inputs:
   github_repository:
     description: "{{ github.repository}}"
     required: true
-  github_runid:
+  github_run_id:
     description: "{{ github.run_id }}"
     required: true
 runs:
