@@ -1,13 +1,40 @@
-name: "Go Container Action Template"
-description: "Get started with Go Container actions"
-author: "Jacob Tomlinson"
+name: "Terraform New Relic Operations Monitoring"
+description: "NewRelic Custom Event to monitor Terraform operations"
+author: "Marc Richard"
 inputs:
-  myInput:
-    description: "Input to use"
-    default: "world"
-outputs:
-  myOutput:
-    description: "Output from the action"
+  new_relic_api_key:
+    description: "New Relic API KEY"
+    required: true
+  event_type_name:
+    description: "New Relic CustomEvent Name"
+    required: false
+    default: "DeployEvent"
+  env:
+    description: "Staging"
+    required: true
+    default: "prod"
+  terraform_init_status:
+    description: "Terraform init status"
+    required: true
+  terraform_apply_status:
+    description: "Input apply status"
+    required: true
+  terraform_output_plan_file_path:
+    description: "Terraform output file path"
+    required: false
+  terraform_tag_key:
+    description: "Terraform tag used to precise deployed components"
+    default: "subdomain"
+    required: false
+  terraform_tag_value:
+    description: "Terraform value used to precise deployed components"
+    required: false
+  github_repository:
+    description: "{{ github.repository}}"
+    required: true
+  github_runid:
+    description: "{{ github.run_id }}"
+    required: true
 runs:
   using: "docker"
   image: "Dockerfile"
