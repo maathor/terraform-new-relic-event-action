@@ -1,4 +1,4 @@
-# Go Container Action Template
+# Terraform New Relic Event Action
 
 [![Action Template](https://img.shields.io/badge/Action%20Template-Go%20Container%20Action-blue.svg?colorA=24292e&colorB=0366d6&style=flat&longCache=true&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAM6wAADOsB5dZE0gAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAERSURBVCiRhZG/SsMxFEZPfsVJ61jbxaF0cRQRcRJ9hlYn30IHN/+9iquDCOIsblIrOjqKgy5aKoJQj4O3EEtbPwhJbr6Te28CmdSKeqzeqr0YbfVIrTBKakvtOl5dtTkK+v4HfA9PEyBFCY9AGVgCBLaBp1jPAyfAJ/AAdIEG0dNAiyP7+K1qIfMdonZic6+WJoBJvQlvuwDqcXadUuqPA1NKAlexbRTAIMvMOCjTbMwl1LtI/6KWJ5Q6rT6Ht1MA58AX8Apcqqt5r2qhrgAXQC3CZ6i1+KMd9TRu3MvA3aH/fFPnBodb6oe6HM8+lYHrGdRXW8M9bMZtPXUji69lmf5Cmamq7quNLFZXD9Rq7v0Bpc1o/tp0fisAAAAASUVORK5CYII=)](https://github.com/jacobtomlinson/go-container-action)
 [![Actions Status](https://github.com/jacobtomlinson/go-container-action/workflows/Build/badge.svg)](https://github.com/jacobtomlinson/go-container-action/actions)
@@ -17,69 +17,52 @@ Describe how to use your action here.
 ### Example workflow
 
 ```yaml
-name: My Workflow
-on: [push, pull_request]
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@master
-    - name: Run action
-
-      # Put your action repo here
-      uses: me/myaction@master
-
-      # Put an example of your mandatory inputs here
-      with:
-        myInput: world
+      - name: Terraform Init
+        working-directory: ./report/infra
+        id: init
+        continue-on-error: true
+        run: terraform init -auto-approve -var "profile=prod"
+      - name: Terraform Plan
+        working-directory: ./report/infra
+        id: apply
+        continue-on-error: true
+        run: terraform apply -auto-approve -var "profile=prod"
+      - name: Terraform Apply
+        working-directory: ./report/infra
+        id: apply
+        continue-on-error: true
+        run: terraform apply -auto-approve -var "profile=prod"
+      - name: Terraform Monitoring
+        uses: maathor/terraform-new-relic-event-action@master
+        with:
+          new_relic_api_key: {{ SECRET.NEW_RELIC_API_KEY}}
+          event_type_name: DeployEvent
+          env: prod
+          terraform_init_status: init
+          terraform_apply_status: status
+          terraform_tag_key: FeatureTeam
+          terraform_tag_value: Report
+          github_repository: {{ github.repository}}
+          github_runid: {{ github.runid}}
 ```
 
 ### Inputs
 
 | Input                                             | Description                                        |
 |------------------------------------------------------|-----------------------------------------------|
-| `myInput`  | An example mandatory input    |
-| `anotherInput` _(optional)_  | An example optional input    |
-
-### Outputs
-
-| Output                                             | Description                                        |
-|------------------------------------------------------|-----------------------------------------------|
-| `myOutput`  | An example output (returns 'Hello world')    |
+| `new_relic_api_key`  | {{ SECRET.NEW_RELIC_API_KEY}}    |
+| `event_type_name`   | custom event type name    |
+| `env`   | custom event type name    |
+| `terraform_init_status`   | custom event type name    |
+| `terraform_apply_status`   | custom event type name    |
+| `terraform_tag_key`   | tag key to put into GHA monitoring    |
+| `terraform_tag_value`   | tag value to put into GHA monitoring    |
+| `github_repository`   | {{ github.repository}}    |
+| `github_runid`   | {{ github.runid}}    |
 
 ## Examples
 
 > NOTE: People ❤️ cut and paste examples. Be generous with them!
 
-### Using the optional input
-
 This is how to use the optional input.
 
-```yaml
-with:
-  myInput: world
-  anotherInput: optional
-```
-
-### Using outputs
-
-Show people how to use your outputs in another action.
-
-```yaml
-steps:
-- uses: actions/checkout@master
-- name: Run action
-  id: myaction
-
-  # Put your action name here
-  uses: me/myaction@master
-
-  # Put an example of your mandatory arguments here
-  with:
-    myInput: world
-
-# Put an example of using your outputs here
-- name: Check outputs
-    run: |
-    echo "Outputs - ${{ steps.myaction.outputs.myOutput }}"
-```
