@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -22,6 +23,7 @@ type TerraformOperations struct {
 }
 
 func main() {
+	//inputs
 	newRelicEventType := os.Getenv("INPUT_EVENT_TYPE_NAME")
 	newRelicLicenseKey := os.Getenv("INPUT_NEW_RELIC_LICENCE_KEY")
 	stage := os.Getenv("INPUT_ENV")
@@ -56,11 +58,11 @@ func main() {
 		return
 	}
 	app.Shutdown(5 * time.Second)
-	fmt.Printf("create= %d\n", terraformOperations.Create)
-	fmt.Printf("Delete= %d\n", terraformOperations.Delete)
-	fmt.Printf("NoOp= %d\n", terraformOperations.NoOp)
-	fmt.Printf("Update= %d\n", terraformOperations.Update)
-
+	// output
+	fmt.Println(fmt.Sprintf(`::set-output name=terraform_update::%s`, strconv.Itoa(terraformOperations.Update)))
+	fmt.Println(fmt.Sprintf(`::set-output name=terraform_create::%s`, strconv.Itoa(terraformOperations.Create)))
+	fmt.Println(fmt.Sprintf(`::set-output name=terraform_delete::%s`, strconv.Itoa(terraformOperations.Delete)))
+	fmt.Println(fmt.Sprintf(`::set-output name=terraform_noop::%s`, strconv.Itoa(terraformOperations.NoOp)))
 }
 
 func computeTerraformOperationsNumber(terraformOperation string) TerraformOperations {

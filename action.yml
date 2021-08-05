@@ -39,6 +39,15 @@ inputs:
   github_run_id:
     description: "{{ github.run_id }}"
     required: true
+outputs:
+  terraform_update:
+    description: "Output terraform update resources"
+  terraform_create:
+    description: "Output terraform create resources"
+  terraform_delete:
+    description: "Output terraform delete resources"
+  terraform_noop:
+    description: "Output terraform no operation resources"
 runs:
   using: "docker"
   image: "Dockerfile"

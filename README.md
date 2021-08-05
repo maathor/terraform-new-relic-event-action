@@ -69,3 +69,11 @@ We will not collect any data, and we prove it;)
 | `github_repository`   | {{ github.repository}}    |
 | `github_runid`   | {{ github.runid}}    |
 
+### Outputs
+
+| Output                                             | Description                                        |
+|------------------------------------------------------|-----------------------------------------------|
+| `terraform_update`  | terraform update resource number    |
+| `terraform_create`  | terraform create resource number    |
+| `terraform_delete`  | terraform delete resource number    |
+| `terraform_noop`  | terraform no operation resource number    |
