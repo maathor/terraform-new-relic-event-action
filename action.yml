@@ -26,6 +26,10 @@ inputs:
     description: "Terraform tag used to precise deployed components"
     default: "subdomain"
     required: false
+  terrafor_operation_list:
+    description: "output of terraform show -json tfplan.out > output.json"
+    default: ""
+    required: true
   terraform_tag_value:
     description: "Terraform value used to precise deployed components"
     required: false
