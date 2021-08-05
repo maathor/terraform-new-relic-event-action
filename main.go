@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"github.com/newrelic/go-agent"
+	"io/ioutil"
 	"log"
 	"os"
 	"strings"
@@ -30,11 +31,15 @@ func main() {
 	terraformTagValue := os.Getenv("INPUT_TERRAFORM_TAG_VALUE")
 	github_repository := os.Getenv("INPUT_GITHUB_REPOSITORY")
 	github_run_id := os.Getenv("INPUT_GITHUB_RUN_ID")
-	terraformOperation := os.Getenv("INPUT_TERRAFORM_OPERATION_LIST")
+	terraformOperationPath := os.Getenv("INPUT_TERRAFORM_OPERATION_LIST_PATH")
 	gha_url := fmt.Sprintf("https://github.com/%s/actions/runs/%s", github_repository, github_run_id)
 
 	app := initNewRelicClient(newRelicLicenseKey)
-	terraformOperations := computeTerraformOperationsNumber(terraformOperation)
+	byteFile, err := ioutil.ReadFile(terraformOperationPath)
+	if err != nil {
+		log.Println("error while reading terraform operation file: ", err)
+	}
+	terraformOperations := computeTerraformOperationsNumber(string(byteFile))
 
 	if err := app.RecordCustomEvent(newRelicEventType,map[string]interface{}{
 		"env": stage,
@@ -51,6 +56,10 @@ func main() {
 		return
 	}
 	app.Shutdown(5 * time.Second)
+	fmt.Printf("create= %d\n", terraformOperations.Create)
+	fmt.Printf("Delete= %d\n", terraformOperations.Delete)
+	fmt.Printf("NoOp= %d\n", terraformOperations.NoOp)
+	fmt.Printf("Update= %d\n", terraformOperations.Update)
 
 }
 

@@ -31,8 +31,9 @@ We will not collect any data, and we prove it;)
         continue-on-error: true
         run: |
           terraform plan -out tfplan.out
-          changes_list=$(terraform show -json tfplan.out | jq '.resource_changes[].change.actions[]')
-          echo "::set-output name=changes::$changes_list"
+          terraform show -json tfplan.out | jq '.resource_changes[].change.actions[]' > changes.log
+          change_path=$(readlink -f changes.log)
+          echo "::set-output name=changes_path::$change_path"
       - name: Terraform Apply
         working-directory: ./report/infra
         id: apply
@@ -45,7 +46,7 @@ We will not collect any data, and we prove it;)
           event_type_name: DeployEvent
           env: prod
           terraform_init_status: ${{ steps.init.outcome }}
-          terraform_operation_list: ${{ steps.plan.outputs.changes}}
+          terraform_operation_list_path: ${{ steps.plan.outputs.changes_path}}
           terraform_apply_status: ${{ steps.apply.outcome }}
           terraform_tag_key: FeatureTeam
           terraform_tag_value: Report
@@ -61,7 +62,7 @@ We will not collect any data, and we prove it;)
 | `event_type_name`   | custom event type name    |
 | `env`   | custom event type name    |
 | `terraform_init_status`   | custom event type name    |
-| `terraform_operation_list`   | output of `terraform show -json tfplan.out <pipe> jq .resource_changes[].change.actions[]`    |
+| `terraform_operation_list_path`   | output of `terraform show -json tfplan.out <pipe> jq .resource_changes[].change.actions[]`    |
 | `terraform_apply_status`   | custom event type name    |
 | `terraform_tag_key`   | tag key to put into GHA monitoring    |
 | `terraform_tag_value`   | tag value to put into GHA monitoring    |
