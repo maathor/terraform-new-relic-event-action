@@ -58,17 +58,17 @@ func computeTerraformOperationsNumber(terraformOperation string) TerraformOperat
 	var tOp TerraformOperations
 	scanner := bufio.NewScanner(strings.NewReader(terraformOperation))
 	for scanner.Scan() {
-		fmt.Println(scanner.Text())
-		switch operation := scanner.Text(); operation {
-		case "no-op":
+		operation := scanner.Text()
+		switch {
+		case strings.Contains(operation, "no-op"):
 			tOp.NoOp = tOp.NoOp + 1
-		case "create":
+		case strings.Contains(operation, "create"):
 			tOp.Create = tOp.Create + 1
-		case "delete":
+		case strings.Contains(operation, "delete"):
 			tOp.Create = tOp.Create + 1
-		case "read":
+		case strings.Contains(operation, "read"):
 			tOp.Read = tOp.Read + 1
-		case "update":
+		case strings.Contains(operation, "update"):
 			tOp.Update = tOp.Update + 1
 		default:
 			log.Println("Operation Unknown: ", operation)
