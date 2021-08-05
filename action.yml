@@ -26,8 +26,8 @@ inputs:
     description: "Terraform tag used to precise deployed components"
     default: "subdomain"
     required: false
-  terrafor_operation_list:
-    description: "output of terraform show -json tfplan.out > output.json"
+  terraform_operation_list:
+    description: "output of terraform show -json tfplan.out | jq '.resource_changes[].change.actions'"
     default: ""
     required: true
   terraform_tag_value:
