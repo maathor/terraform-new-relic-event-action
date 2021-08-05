@@ -18,9 +18,12 @@ It writes into your New Relic account a new customEvent that contains all the pa
         run: terraform init -auto-approve -var "profile=prod"
       - name: Terraform Plan
         working-directory: ./report/infra
-        id: apply
+        id: plan
         continue-on-error: true
-        run: terraform apply -auto-approve -var "profile=prod"
+        run: |
+          terraform plan -var "profile=prod" -out tfplan.out
+          changes_list=$(terraform show -json tfplan.out | jq '.resource_changes[].change.actions')
+          echo "::set-output name=changes::$changes_list"
       - name: Terraform Apply
         working-directory: ./report/infra
         id: apply
@@ -33,6 +36,7 @@ It writes into your New Relic account a new customEvent that contains all the pa
           event_type_name: DeployEvent
           env: prod
           terraform_init_status: ${{ steps.init.outcome }}
+          terraform_operation_list: ${{ steps.plan.outputs.changes}}
           terraform_apply_status: ${{ steps.apply.outcome }}
           terraform_tag_key: FeatureTeam
           terraform_tag_value: Report
