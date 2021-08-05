@@ -24,7 +24,7 @@ We will not collect any data, and we prove it;)
         working-directory: ./report/infra
         id: init
         continue-on-error: true
-        run: terraform init -auto-approve -var "profile=prod"
+        run: terraform init
       - name: Terraform Plan
         working-directory: ../report/infra
         id: plan
@@ -38,7 +38,7 @@ We will not collect any data, and we prove it;)
         working-directory: ./report/infra
         id: apply
         continue-on-error: true
-        run: terraform apply -auto-approve -var "profile=prod"
+        run: terraform apply -auto-approve
       - name: Terraform Monitoring
         uses: maathor/terraform-new-relic-event-action@master
         with:
