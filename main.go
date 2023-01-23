@@ -3,7 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
-	newrelic "github.com/newrelic/go-agent"
+	newrelic "github.com/newrelic/go-agent/v3/newrelic"
 	"io/ioutil"
 	"log"
 	"os"
@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-var newRelicApp newrelic.Application
+var newRelicApp *newrelic.Application
 
 type TerraformOperations struct {
 	Create int
@@ -36,14 +36,14 @@ func main() {
 	terraformOperationPath := os.Getenv("INPUT_TERRAFORM_OPERATION_LIST_PATH")
 	gha_url := fmt.Sprintf("https://github.com/%s/actions/runs/%s", github_repository, github_run_id)
 
-	app := initNewRelicClient(newRelicLicenseKey)
+	newRelicApp := initNewRelicClient(newRelicLicenseKey)
 	byteFile, err := ioutil.ReadFile(terraformOperationPath)
 	if err != nil {
 		log.Println("error while reading terraform operation file: ", err)
 	}
 	terraformOperations := computeTerraformOperationsNumber(string(byteFile))
 
-	if err := app.RecordCustomEvent(newRelicEventType, map[string]interface{}{
+	newRelicApp.RecordCustomEvent(newRelicEventType, map[string]interface{}{
 		"env":             stage,
 		"terraformApply":  terraformApplyStatus,
 		terraformTagKey:   terraformTagValue,
@@ -53,11 +53,8 @@ func main() {
 		"terraformNoOp":   terraformOperations.NoOp,
 		"terraformUpdate": terraformOperations.Update,
 		"ghaUrl":          gha_url,
-	}); err != nil {
-		log.Println("error in creating New Relic custom event: ", err)
-		return
-	}
-	app.Shutdown(5 * time.Second)
+	})
+	newRelicApp.Shutdown(5 * time.Second)
 	// output
 	fmt.Println(fmt.Sprintf(`::set-output name=terraform_update::%s`, strconv.Itoa(terraformOperations.Update)))
 	fmt.Println(fmt.Sprintf(`::set-output name=terraform_create::%s`, strconv.Itoa(terraformOperations.Create)))
@@ -89,12 +86,14 @@ func computeTerraformOperationsNumber(terraformOperation string) TerraformOperat
 }
 
 func initNewRelicClient(newRelicLicenseKey string) newrelic.Application {
-	config := newrelic.NewConfig("GithubActionsMonitoring", newRelicLicenseKey)
-	newRelicApp, err := newrelic.NewApplication(config)
-	if err != nil {
-		log.Println("error in creating new relic application: ", err)
-		panic(err)
+	newRelicApp, err := newrelic.NewApplication(newrelic.ConfigAppName("GithubActionsMonitoring"), newrelic.ConfigLicense(newRelicLicenseKey))
+	if nil != err {
+		fmt.Println(err)
+		os.Exit(1)
 	}
-	newRelicApp.WaitForConnection(5 * time.Second)
-	return newRelicApp
+	if err = newRelicApp.WaitForConnection(5 * time.Second); nil != err {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	return *newRelicApp
 }
