@@ -15,5 +15,5 @@ jobs:
 
       - name: Build
         run: |
-          go get -d -v
+          go install github.com/newrelic/go-agent
           go build -v .

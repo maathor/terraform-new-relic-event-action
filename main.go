@@ -3,7 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"github.com/newrelic/go-agent"
+	newrelic "github.com/newrelic/go-agent"
 	"io/ioutil"
 	"log"
 	"os"
@@ -16,10 +16,10 @@ var newRelicApp newrelic.Application
 
 type TerraformOperations struct {
 	Create int
-	NoOp int
+	NoOp   int
 	Delete int
 	Update int
-	Read int
+	Read   int
 }
 
 func main() {
@@ -43,16 +43,16 @@ func main() {
 	}
 	terraformOperations := computeTerraformOperationsNumber(string(byteFile))
 
-	if err := app.RecordCustomEvent(newRelicEventType,map[string]interface{}{
-		"env": stage,
-		"terraformApply": terraformApplyStatus,
-		terraformTagKey: terraformTagValue,
-		"terraformInit": terraformInitStatus,
-		"terraformCreate" : terraformOperations.Create,
-		"terraformDelete" : terraformOperations.Delete,
-		"terraformNoOp" : terraformOperations.NoOp,
-		"terraformUpdate" : terraformOperations.Update,
-		"ghaUrl": gha_url,
+	if err := app.RecordCustomEvent(newRelicEventType, map[string]interface{}{
+		"env":             stage,
+		"terraformApply":  terraformApplyStatus,
+		terraformTagKey:   terraformTagValue,
+		"terraformInit":   terraformInitStatus,
+		"terraformCreate": terraformOperations.Create,
+		"terraformDelete": terraformOperations.Delete,
+		"terraformNoOp":   terraformOperations.NoOp,
+		"terraformUpdate": terraformOperations.Update,
+		"ghaUrl":          gha_url,
 	}); err != nil {
 		log.Println("error in creating New Relic custom event: ", err)
 		return
